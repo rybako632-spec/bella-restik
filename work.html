@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BELLA — Menu</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:Arial,sans-serif;
+  background:#0d0d0d;
+  color:white;
+}
+
+header{
+  text-align:center;
+  padding:28px 15px 20px;
+  background:#111;
+  position:sticky;
+  top:0;
+  z-index:10;
+  border-bottom:1px solid #292929;
+}
+
+.logo{
+  font-size:32px;
+  font-weight:bold;
+  letter-spacing:6px;
+  margin-bottom:18px;
+}
+
+.top-buttons{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+}
+
+.top-buttons button{
+  border:0;
+  border-radius:25px;
+  padding:12px 22px;
+  background:#222;
+  color:white;
+  font-size:15px;
+  font-weight:bold;
+}
+
+.top-buttons button.active{
+  background:white;
+  color:#111;
+}
+
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:20px 15px 40px;
+}
+
+.category-title{
+  font-size:24px;
+  margin:25px 0 15px;
+}
+
+.categories{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  padding-bottom:8px;
+  scrollbar-width:none;
+}
+
+.categories::-webkit-scrollbar{
+  display:none;
+}
+
+.categories button{
+  flex:0 0 auto;
+  border:1px solid #333;
+  background:#171717;
+  color:white;
+  border-radius:20px;
+  padding:10px 16px;
+}
+
+.categories button.active{
+  background:white;
+  color:#111;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:18px;
+}
+
+.card{
+  background:#181818;
+  border-radius:18px;
+  overflow:hidden;
+  border:1px solid #252525;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.card:active{
+  transform:scale(.98);
+}
+
+.card img{
+  width:100%;
+  height:220px;
+  object-fit:cover;
+  display:block;
+}
+
+.no-photo{
+  height:220px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#222;
+  color:#777;
+}
+
+.card-info{
+  padding:15px;
+}
+
+.card-name{
+  font-size:18px;
+  font-weight:bold;
+  margin-bottom:8px;
+}
+
+.card-price{
+  font-size:18px;
+  font-weight:bold;
+}
+
+.card-description{
+  color:#aaa;
+  font-size:14px;
+  margin-top:8px;
+  line-height:1.4;
+}
+
+.loading,
+.empty{
+  text-align:center;
+  padding:50px 10px;
+  color:#888;
+}
+
+/* MODAL */
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.85);
+  display:none;
+  align-items:flex-end;
+  justify-content:center;
+  z-index:100;
+}
+
+.modal.show{
+  display:flex;
+}
+
+.modal-box{
+  width:100%;
+  max-width:600px;
+  max-height:92vh;
+  overflow-y:auto;
+  background:#181818;
+  border-radius:24px 24px 0 0;
+  position:relative;
+}
+
+.modal-box img{
+  width:100%;
+  max-height:330px;
+  object-fit:cover;
+}
+
+.modal-content{
+  padding:22px;
+}
+
+.close{
+  position:absolute;
+  right:15px;
+  top:15px;
+  width:42px;
+  height:42px;
+  border:0;
+  border-radius:50%;
+  background:rgba(0,0,0,.7);
+  color:white;
+  font-size:22px;
+}
+
+.modal-name{
+  font-size:27px;
+  font-weight:bold;
+  margin-bottom:8px;
+}
+
+.modal-price{
+  font-size:22px;
+  font-weight:bold;
+  margin-bottom:18px;
+}
+
+.modal-text{
+  color:#ccc;
+  line-height:1.5;
+  margin-bottom:15px;
+}
+
+.modal-label{
+  font-weight:bold;
+  margin-bottom:5px;
+}
+
+@media(max-width:700px){
+
+  header{
+    padding:20px 12px 15px;
+  }
+
+  .logo{
+    font-size:28px;
+  }
+
+  .container{
+    padding:10px 12px 30px;
+  }
+
+  .grid{
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+
+  .card{
+    border-radius:14px;
+  }
+
+  .card img,
+  .no-photo{
+    height:145px;
+  }
+
+  .card-info{
+    padding:11px;
+  }
+
+  .card-name{
+    font-size:16px;
+  }
+
+  .card-price{
+    font-size:16px;
+  }
+
+  .card-description{
+    font-size:12px;
+  }
+
+}
+
+@media(max-width:380px){
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .card img,
+  .no-photo{
+    height:210px;
+  }
+
+}
+</style>
+</head>
+
+<body>
+
+<header>
+
+  <div class="logo">
+    BELLA
+  </div>
+
+  <div class="top-buttons">
+
+    <button
+      id="menuBtn"
+      class="active"
+      onclick="switchType('menu')"
+    >
+      🍽 Menu
+    </button>
+
+    <button
+      id="barBtn"
+      onclick="switchType('bar')"
+    >
+      🍹 Bar
+    </button>
+
+  </div>
+
+</header>
+
+
+<div class="container">
+
+  <div
+    id="categories"
+    class="categories"
+  ></div>
+
+  <div
+    id="dishes"
+    class="grid"
+  >
+    <div class="loading">
+      Ładowanie menu...
+    </div>
+  </div>
+
+</div>
+
+
+<!-- MODAL -->
+
+<div
+  id="modal"
+  class="modal"
+  onclick="closeOutside(event)"
+>
+
+  <div
+    class="modal-box"
+    onclick="event.stopPropagation()"
+  >
+
+    <button
+      class="close"
+      onclick="closeModal()"
+    >
+      ×
+    </button>
+
+    <img
+      id="modalImage"
+      style="display:none"
+    >
+
+    <div class="modal-content">
+
+      <div
+        id="modalName"
+        class="modal-name"
+      ></div>
+
+      <div
+        id="modalPrice"
+        class="modal-price"
+      ></div>
+
+      <div
+        id="modalDescription"
+        class="modal-text"
+      ></div>
+
+      <div
+        id="ingredientsBlock"
+      >
+        <div class="modal-label">
+          Składniki
+        </div>
+
+        <div
+          id="modalIngredients"
+          class="modal-text"
+        ></div>
+      </div>
+
+      <div
+        id="allergensBlock"
+      >
+        <div class="modal-label">
+          Alergeny
+        </div>
+
+        <div
+          id="modalAllergens"
+          class="modal-text"
+        ></div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script type="module">
+
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+
+import {
+  getFirestore,
+  collection,
+  getDocs
+} from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+
+const firebaseConfig = {
+
+  apiKey:
+    "AIzaSyA3YFrHFBS8QQZD15BpqqS1j5SQtZ0kDeE",
+
+  authDomain:
+    "bella-ae79a.firebaseapp.com",
+
+  projectId:
+    "bella-ae79a",
+
+  storageBucket:
+    "bella-ae79a.firebasestorage.app",
+
+  messagingSenderId:
+    "127734379674",
+
+  appId:
+    "1:127734379674:web:c0351128cfb92aa63a9b23",
+
+  measurementId:
+    "G-MC83PF9WW8"
+
+};
+
+
+const app =
+  initializeApp(firebaseConfig);
+
+const db =
+  getFirestore(app);
+
+
+let allDishes = [];
+
+let currentType = "menu";
+
+
+const menuCategories = {
+
+  new:"Nowości",
+
+  snacks:"Przekąski",
+
+  salads:"Sałatki",
+
+  soups:"Zupy",
+
+  hot:"Dania główne",
+
+  pizza:"Pizza",
+
+  fastfood:"Fast food",
+
+  desserts:"Desery"
+
+};
+
+
+const barCategories = {
+
+  drinks:"Napoje",
+
+  coffee:"Kawa",
+
+  tea:"Herbata",
+
+  lemonades:"Lemoniady"
+
+};
+
+
+function escapeHtml(text){
+
+  return String(text || "")
+
+    .replaceAll("&","&amp;")
+
+    .replaceAll("<","&lt;")
+
+    .replaceAll(">","&gt;")
+
+    .replaceAll('"',"&quot;")
+
+    .replaceAll("'","&#039;");
+
+}
+
+
+async function loadDishes(){
+
+  const box =
+    document.getElementById("dishes");
+
+  try{
+
+    const snapshot =
+      await getDocs(
+        collection(
+          db,
+          "dishes"
+        )
+      );
+
+    allDishes = [];
+
+    snapshot.forEach(doc => {
+
+      allDishes.push({
+
+        id:doc.id,
+
+        ...doc.data()
+
+      });
+
+    });
+
+    renderCategories();
+
+    renderDishes();
+
+  }catch(error){
+
+    console.error(error);
+
+    box.innerHTML = `
+      <div class="empty">
+        Nie udało się załadować menu
+      </div>
+    `;
+
+  }
+
+}
+
+
+function getCategories(){
+
+  return currentType === "menu"
+    ? menuCategories
+    : barCategories;
+
+}
+
+
+function renderCategories(){
+
+  const box =
+    document.getElementById(
+      "categories"
+    );
+
+  const categories =
+    getCategories();
+
+  box.innerHTML = "";
+
+  Object.entries(categories)
+    .forEach(
+      ([key,name],index) => {
+
+        const button =
+          document.createElement(
+            "button"
+          );
+
+        button.textContent =
+          name;
+
+        if(index === 0){
+
+          button.classList.add(
+            "active"
+          );
+
+        }
+
+        button.onclick = () => {
+
+          document
+            .querySelectorAll(
+              ".categories button"
+            )
+            .forEach(
+              b =>
+                b.classList.remove(
+                  "active"
+                )
+            );
+
+          button.classList.add(
+            "active"
+          );
+
+          renderDishes(key);
+
+        };
+
+        box.appendChild(button);
+
+      }
+    );
+
+}
+
+
+function renderDishes(
+  selectedCategory
+){
+
+  const box =
+    document.getElementById(
+      "dishes"
+    );
+
+  const categories =
+    getCategories();
+
+  const allowed =
+    Object.keys(categories);
+
+
+  let dishes =
+    allDishes.filter(
+      dish =>
+        allowed.includes(
+          dish.category
+        )
+    );
+
+
+  if(selectedCategory){
+
+    dishes =
+      dishes.filter(
+        dish =>
+          dish.category ===
+          selectedCategory
+      );
+
+  }else{
+
+    const firstCategory =
+      allowed[0];
+
+    dishes =
+      dishes.filter(
+        dish =>
+          dish.category ===
+          firstCategory
+      );
+
+  }
+
+
+  if(dishes.length === 0){
+
+    box.innerHTML = `
+      <div class="empty">
+        W tej kategorii nie ma jeszcze żadnych dań
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  box.innerHTML = "";
+
+
+  dishes.forEach(
+    dish => {
+
+      const card =
+        document.createElement(
+          "div"
+        );
+
+      card.className =
+        "card";
+
+
+      card.innerHTML = `
+
+        ${
+          dish.photo
+
+          ?
+
+          `
+          <img
+            src="${escapeHtml(
+              dish.photo
+            )}"
+            alt="${escapeHtml(
+              dish.name
+            )}"
+          >
+          `
+
+          :
+
+          `
+          <div class="no-photo">
+            BELLA
+          </div>
+          `
+        }
+
+        <div class="card-info">
+
+          <div class="card-name">
+            ${escapeHtml(
+              dish.name
+            )}
+          </div>
+
+          <div class="card-price">
+            ${dish.price || 0} PLN
+          </div>
+
+          ${
+            dish.description
+
+            ?
+
+            `
+            <div class="card-description">
+              ${escapeHtml(
+                dish.description
+              )}
+            </div>
+            `
+
+            :
+
+            ""
+          }
+
+        </div>
+      `;
+
+
+      card.onclick = () =>
+        openModal(dish);
+
+
+      box.appendChild(card);
+
+    }
+  );
+
+}
+
+
+window.switchType =
+  function(type){
+
+    currentType = type;
+
+
+    document
+      .getElementById("menuBtn")
+      .classList.toggle(
+        "active",
+        type === "menu"
+      );
+
+
+    document
+      .getElementById("barBtn")
+      .classList.toggle(
+        "active",
+        type === "bar"
+      );
+
+
+    renderCategories();
+
+    renderDishes();
+
+  };
+
+
+function openModal(dish){
+
+  const modal =
+    document.getElementById(
+      "modal"
+    );
+
+  const image =
+    document.getElementById(
+      "modalImage"
+    );
+
+
+  document.getElementById(
+    "modalName"
+  ).textContent =
+    dish.name || "";
+
+
+  document.getElementById(
+    "modalPrice"
+  ).textContent =
+    `${dish.price || 0} PLN`;
+
+
+  document.getElementById(
+    "modalDescription"
+  ).textContent =
+    dish.description || "";
+
+
+  document.getElementById(
+    "modalIngredients"
+  ).textContent =
+    dish.ingredients || "—";
+
+
+  document.getElementById(
+    "modalAllergens"
+  ).textContent =
+    dish.allergens || "—";
+
+
+  if(dish.photo){
+
+    image.src =
+      dish.photo;
+
+    image.style.display =
+      "block";
+
+  }else{
+
+    image.style.display =
+      "none";
+
+  }
+
+
+  modal.classList.add(
+    "show"
+  );
+
+  document.body.style.overflow =
+    "hidden";
+
+}
+
+
+window.closeModal =
+  function(){
+
+    document
+      .getElementById("modal")
+      .classList.remove(
+        "show"
+      );
+
+    document.body.style.overflow =
+      "";
+
+  };
+
+
+window.closeOutside =
+  function(event){
+
+    if(
+      event.target.id ===
+      "modal"
+    ){
+
+      closeModal();
+
+    }
+
+  };
+
+
+loadDishes();
+
+</script>
+
+</body>
+</html>
